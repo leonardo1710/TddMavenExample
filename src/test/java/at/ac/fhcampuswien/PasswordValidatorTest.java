@@ -4,16 +4,26 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.Mockito.*;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 public class PasswordValidatorTest {
+    private static PasswordValidator pw;
+
+    @Spy
+    public PasswordValidator spy = spy(pw);
 
     @BeforeAll
     static void init(){
-
+        pw = new PasswordValidator();
     }
 
     @BeforeEach
@@ -24,20 +34,17 @@ public class PasswordValidatorTest {
     @Test
     @DisplayName("Has password valid length")
     public void testIsValid_Scenario1(){
-        PasswordValidator pw = new PasswordValidator();
         assertTrue(pw.isValid("pw1234"));
     }
 
     @Test
     @DisplayName("Test password value null")
     public void testIsValid_Scenario2(){
-        PasswordValidator pw = new PasswordValidator();
         assertThrows(IllegalArgumentException.class, () -> pw.isValid(null));
     }
 
     @Test
     public void testShowMessage_Scenario1(){
-        PasswordValidator pw = new PasswordValidator();
         String actual = pw.showMessage(false);
         String expected = "Login failed. Password not valid.";
         assertEquals(expected, actual);
@@ -45,12 +52,40 @@ public class PasswordValidatorTest {
 
     @Test
     public void testShowMessage_Scenario2(){
-        PasswordValidator pw = new PasswordValidator();
         String actual = pw.showMessage(true);
         String expected = "Login successful!";
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void testFindPasswordAtPosition_Scenario1(){
+        ArrayList<String> passwordList = new ArrayList<>();
+        passwordList.add("mypass1");
+        passwordList.add("mypass2");
+
+        // stub the getSavedPasswords() function
+        // we need to spy the class because we want to stub a method of the same class
+        doReturn(passwordList).when(spy).getSavedPasswords();
+
+        String expected = "mypass1";
+        String actual = spy.findPasswordAtPosition(0);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testFindPasswordAtPosition_Scenario2(){
+        ArrayList<String> passwordList = new ArrayList<>();
+
+        // stub the getSavedPasswords() function
+        // we need to spy the class because we want to stub a method of the same class
+        doReturn(passwordList).when(spy).getSavedPasswords();
+
+        String expected = "";
+        String actual = spy.findPasswordAtPosition(0);
+
+        assertEquals(expected, actual);
+    }
 }
 
 
