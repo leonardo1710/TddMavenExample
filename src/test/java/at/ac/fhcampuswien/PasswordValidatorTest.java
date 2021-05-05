@@ -38,6 +38,18 @@ public class PasswordValidatorTest {
     }
 
     @Test
+    @DisplayName("Password too short")
+    public void testIsValid_Scenario3(){
+        assertFalse(pw.isValid("pw"));
+    }
+
+    @Test
+    @DisplayName("Password too long")
+    public void testIsValid_Scenario4(){
+        assertFalse(pw.isValid("pwasdjio12i3h1213"));
+    }
+
+    @Test
     @DisplayName("Test password value null")
     public void testIsValid_Scenario2(){
         assertThrows(IllegalArgumentException.class, () -> pw.isValid(null));
